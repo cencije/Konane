@@ -7,10 +7,9 @@ import acm.graphics.GOval;
 public class Tile extends GCompound {
 
 	GImage img;
-	GOval piece;
 	int id;
 	int width, height;
-	boolean canPass = true;
+	boolean canMove = false;
 	
 	public Tile(int x, int y, int type) {
 		id = type;

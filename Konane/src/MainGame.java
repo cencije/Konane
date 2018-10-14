@@ -20,6 +20,7 @@ import acm.util.RandomGenerator;
 
 public class MainGame extends GraphicsProgram implements Runnable {
 
+	Algorithm algorithm = new Algorithm();
 	int width, height;
 	
 	// Aesthetic Components
@@ -71,6 +72,7 @@ public class MainGame extends GraphicsProgram implements Runnable {
         GRect rectBot = new GRect(0, 430, 600, 170); rectBot.setFilled(true); rectBot.setFillColor(bar); rectBot.setColor(bar); add(rectBot);
 	    add(imgTitle, 1, 1);
 	    
+	    algorithm.setMain(this);
 	    tfEventArea = new JTextArea(10, 10); tfEventArea.setLineWrap(true); tfEventArea.setWrapStyleWord(true);
         tfEventArea.setEditable(false); eventPane = new JScrollPane(tfEventArea); eventPane.setBounds(10, 440, 475, 150);
         eventPane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK)); add(eventPane, 12, 440);
@@ -141,7 +143,14 @@ public class MainGame extends GraphicsProgram implements Runnable {
 	public void actionPerformed(ActionEvent evt) {
 		if (evt.getActionCommand().equals("New Game")) {
 			if (condition != 1) { drawC = true; condition = 1; }
-			else { condition = 0; for (int i = 0 ; i < 700 ; i++) remove(confetti[i]); }
+			else { condition = 0; for (int i = 0 ; i < 700 ; i++) 
+				remove(confetti[i]);  makeBoard();
+				strRemovalDir = "Black moves first\nEnter a X,Y coordinate pair and click 'Commit' to remove a piece";
+				tfEventArea.setText(strRemovalDir);
+				moveCounter = 1;
+				turnCounter = 1;
+			}
+		
 		}
 		if (evt.getActionCommand().equals("Turn Log")) {
 			
@@ -150,6 +159,14 @@ public class MainGame extends GraphicsProgram implements Runnable {
 
 		}
 		if (evt.getActionCommand().equals("Move-One")) {
+			if (!btnMovable.isEnabled()) btnMovable.setEnabled(true);
+			algorithm.setBoard(tiles);
+			if (moveCounter % 2 == 1) algorithm.moveOne(1);
+			else {
+				algorithm.moveOne(0);
+				turnCounter++;
+			}
+			moveCounter++;
 			
 		}
 		if (evt.getActionCommand().equals("Movable")) {
@@ -233,6 +250,7 @@ public class MainGame extends GraphicsProgram implements Runnable {
 				tfEventArea.setText(tfEventArea.getText() + strWhite);
 				btnMovable.setEnabled(false);
 			}
+			algorithm.setBoard(tiles);
 		}
 		if (evt.getActionCommand().equals("Commit")) {
 			if (tfX.getText().trim().isEmpty() || tfY.getText().trim().isEmpty()) {
@@ -325,6 +343,19 @@ public class MainGame extends GraphicsProgram implements Runnable {
 		}
 	}
 	
+	public void setPostMoveBoard(Tile[][] newBoard) {
+		tiles = newBoard;
+	}
+	
+	public void gameOver(int winningPlayer) {
+		btnMove1.setEnabled(false);
+		btnMovable.setEnabled(false);
+		btnCommit.setEnabled(false);
+		//if (winningPlayer == 1) {
+			condition = 1;
+			drawC = true;
+		//}
+	}
 	public void drawConfetti() {
 		for (int i = 0 ; i < 700 ; i++) {
 			confetti[i] = new GOval(0,0); confetti[i].setSize(6, 6);  confetti[i].setFilled(true);  confetti[i].setFillColor(rand.nextColor());

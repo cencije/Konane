@@ -1,0 +1,193 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import acm.graphics.GImage;
+import acm.graphics.GLabel;
+import acm.graphics.GOval;
+import acm.graphics.GRect;
+import acm.program.GraphicsProgram;
+import acm.util.RandomGenerator;
+
+public class MainGame extends GraphicsProgram implements Runnable {
+
+	int width, height;
+	GLabel btnNewGame, btnLoadGame, btnSaveGame, btnInventory;
+	Font fHead = new Font("Serif", Font.BOLD, 16); Font fStat = new Font("Serif", Font.BOLD, 12);
+	Color bg = new Color(209,209,209);
+    Color bar = new Color(193,85,1);
+    Color snow = new Color(180,212,255);
+    private Color menuColor = new Color(52, 63, 71);
+    
+    GImage imgTitle = new GImage("../Images/TitleLogo.png");
+    
+    JButton btnNG, btnTL, btnFL, btnMovable;
+    
+    JTextField tfWord, tfX, tfY;
+	JTextArea tfEventArea;
+	JScrollPane eventPane;
+	
+	JLabel lblColumn, lblDummy;
+	GLabel lblX0, lblX1, lblX2, lblX3, lblX4, lblX5, lblX6, lblX7;
+	GLabel lblY0, lblY1, lblY2, lblY3, lblY4, lblY5, lblY6, lblY7;
+	GOval[] weather = new GOval[700];
+	
+	ArrayList<ArrayList<Tile>> tilePieces = new ArrayList<ArrayList<Tile>>();
+	ArrayList<ArrayList<Integer>> passableList = new ArrayList<ArrayList<Integer>>();
+	Tile[][] tiles = new Tile[8][8];
+	
+	Scanner reader = new Scanner(System.in);  // Reading from System.in
+	
+	private RandomGenerator rand = new RandomGenerator();
+	
+	private static final double DELAY = 1;
+	
+	boolean drawC = true;
+	int condition = 0;
+	boolean paused = false;
+	
+	public void init() {
+		this.setSize(500,600); width = getWidth(); height = getHeight();
+	    setBackground(menuColor); 
+	    Frame c = (Frame)this.getParent().getParent(); c.setTitle("KONANE");
+
+	    tfEventArea = new JTextArea(10, 10); tfEventArea.setLineWrap(true); tfEventArea.setWrapStyleWord(true);
+        tfEventArea.setEditable(false); eventPane = new JScrollPane(tfEventArea); eventPane.setBounds(10, 440, 475, 150);
+        eventPane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK)); add(eventPane, 12, 440);
+
+        
+        btnNG = new JButton("New Game"); btnNG.setBounds(415,360,90,30);  btnNG.addActionListener(this);
+        btnNG.setToolTipText("Create a New Game"); add(btnNG, 415, 360);
+
+        btnTL = new JButton("Turn Log");  btnTL.setBounds(345,360,80,30);
+        btnTL.addActionListener(this); add(btnTL, 345, 360); btnTL.setEnabled(false);
+
+        btnFL = new JButton("Full Log"); btnFL.setBounds(345,390,80,30);
+        btnFL.addActionListener(this); add(btnFL, 345, 390); btnFL.setEnabled(false);
+        
+        btnMovable = new JButton("Movable"); btnMovable.setBounds(266,1,100,30);
+        btnMovable.addActionListener(this); add(btnMovable, 266, 1); btnMovable.setEnabled(false);
+        
+	    GRect rectTop = new GRect(0,0,600,70); rectTop.setFilled(true); rectTop.setFillColor(bar); rectTop.setColor(bar); add(rectTop);
+        GRect rectBot = new GRect(0, 430, 600, 170); rectBot.setFilled(true); rectBot.setFillColor(bar); rectBot.setColor(bar); add(rectBot);
+        
+        GLabel lblCoords = new GLabel("To Move: (     ,     )"); lblCoords.setColor(Color.WHITE);
+        add(lblCoords, 355, 200); lblCoords.setFont(fHead);
+        add(imgTitle, 1, 1);
+        
+        lblX0 = new GLabel("0"); lblX0.setFont(fHead); lblX0.setColor(Color.WHITE); add(lblX0, 10, 125);
+        lblX1 = new GLabel("1"); lblX1.setFont(fHead); lblX1.setColor(Color.WHITE); add(lblX1, 10, 165);
+        lblX2 = new GLabel("2"); lblX2.setFont(fHead); lblX2.setColor(Color.WHITE); add(lblX2, 10, 205);
+        lblX3 = new GLabel("3"); lblX3.setFont(fHead); lblX3.setColor(Color.WHITE); add(lblX3, 10, 245);
+        lblX4 = new GLabel("4"); lblX4.setFont(fHead); lblX4.setColor(Color.WHITE); add(lblX4, 10, 285);
+        lblX5 = new GLabel("5"); lblX5.setFont(fHead); lblX5.setColor(Color.WHITE); add(lblX5, 10, 325);
+        lblX6 = new GLabel("6"); lblX6.setFont(fHead); lblX6.setColor(Color.WHITE); add(lblX6, 10, 365);
+        lblX7 = new GLabel("7"); lblX7.setFont(fHead); lblX7.setColor(Color.WHITE); add(lblX7, 10, 405);
+        
+        lblY0 = new GLabel("0"); lblY0.setFont(fHead); lblY0.setColor(Color.WHITE); add(lblY0, 45, 90);
+        lblY1 = new GLabel("1"); lblY1.setFont(fHead); lblY1.setColor(Color.WHITE); add(lblY1, 85, 90);
+        lblY2 = new GLabel("2"); lblY2.setFont(fHead); lblY2.setColor(Color.WHITE); add(lblY2, 125, 90);
+        lblY3 = new GLabel("3"); lblY3.setFont(fHead); lblY3.setColor(Color.WHITE); add(lblY3, 165, 90);
+        lblY4 = new GLabel("4"); lblY4.setFont(fHead); lblY4.setColor(Color.WHITE); add(lblY4, 205, 90);
+        lblY5 = new GLabel("5"); lblY5.setFont(fHead); lblY5.setColor(Color.WHITE); add(lblY5, 245, 90);
+        lblY6 = new GLabel("6"); lblY6.setFont(fHead); lblY6.setColor(Color.WHITE); add(lblY6, 285, 90);
+        lblY7 = new GLabel("7"); lblY7.setFont(fHead); lblY7.setColor(Color.WHITE); add(lblY7, 325, 90);
+        
+        tfX = new JTextField(1); add(tfX, 430, 183); tfY = new JTextField(1); add(tfY, 451, 183);
+        
+        makeBoard();
+        
+	    addMouseListeners();
+	    addKeyListeners();
+	    
+	}
+	
+	public void run() {
+
+		while (true) {
+			if (paused) pause(DELAY);
+			else {
+			if (condition == 1) {
+				
+				if (drawC) drawConfetti();
+				drawC = false;
+				animateConfetti(1);
+			}
+			pause(DELAY); 
+			}
+		}
+	}
+	
+	
+	public void actionPerformed(ActionEvent evt) {
+		if (evt.getActionCommand().equals("New Game")) {
+			if (condition != 1) { drawC = true; condition = 1; }
+			else { condition = 0; for (int i = 0 ; i < 700 ; i++) remove(weather[i]); }
+		}
+		if (evt.getActionCommand().equals("Load File")) {
+
+		}
+		if (evt.getActionCommand().equals("Save File")) {
+
+		}
+		if (evt.getActionCommand().equals("Inventory")) {
+
+		}
+	}
+	
+	
+	public void makeBoard() {
+		tilePieces.clear();
+		passableList.clear();
+		boolean other = true;
+		for (int x = 0; x < 8; x++) {
+	    	tilePieces.add(new ArrayList<Tile>());
+	    	passableList.add(new ArrayList<Integer>());
+	    	for (int y = 0; y < 8; y++) {
+	    		passableList.get(x).add(1); 
+	    		if (other) { other = false; tilePieces.get(x).add(new Tile (40,40, 1)); tiles[x][y] = new Tile(40,40, 1); }
+	    		else { other = true; tilePieces.get(x).add(new Tile (40,40, 0)); tiles[x][y] = new Tile(40,40, 0); }
+	    	}
+	    	if (other) other = false;
+	    	else other = true;
+	    	
+		}
+		
+		for (int row = 0; row < 8; row++) {
+	    	tilePieces.add(new ArrayList<Tile>());
+	    	for (int col = 0; col < 8; col++) {
+	    		//add(tilePieces.get(row).get(col), 30 + (col*40), 100 + row*40 ); // - 20, + 10
+	    		add(tiles[row][col], 30 + (col*40), 100 + row*40 ); // - 20, + 10
+	    		System.out.print(passableList.get(row).get(col));
+	    	}
+	    	System.out.println();
+		}
+	}
+	public void drawConfetti() {
+		for (int i = 0 ; i < 700 ; i++) {
+			weather[i] = new GOval(0,0); weather[i].setSize(6, 6);  weather[i].setFilled(true);  weather[i].setFillColor(rand.nextColor());
+			weather[i].setColor(Color.BLACK); add(weather[i], rand.nextDouble(-400, 550), rand.nextDouble(-450, -10));  
+		}
+	}
+	public void animateConfetti(int cond) {
+		
+		int endCond = cond;
+		for (int i = 0 ; i < 700 ; i++) {
+			if (endCond == 1) {
+				weather[i].move(rand.nextDouble(-3, 3), .3);
+				if (weather[i].getY() >= 420) weather[i].setLocation(rand.nextDouble(-400, 600), rand.nextDouble(-10, -100)); 
+			}
+		}
+	}
+}
+

@@ -1,0 +1,23 @@
+import acm.graphics.GImage;
+
+public class Tile {
+
+	GImage img;
+	int id;
+	int width, height;
+	boolean canPass = true;
+	
+	public Tile(int x, int y, int type) {
+		if (type == 0) { img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png");  }
+		if (type == 1) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png"); 
+		else if (type == 2) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_B.png"); 
+
+		width = x; height = y;
+		img.setSize(width, height);
+	}
+	public void setTile(int type) {
+		if (type == 0) { img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png");  }
+		if (type == 1) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png"); 
+		else if (type == 2) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_B.png");
+	}
+}

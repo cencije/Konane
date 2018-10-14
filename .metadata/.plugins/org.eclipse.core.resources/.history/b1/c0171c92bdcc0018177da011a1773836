@@ -1,0 +1,34 @@
+import java.awt.Color;
+
+import acm.graphics.GImage;
+import acm.graphics.GOval;
+
+public class Tile {
+
+	GImage img;
+	GOval piece;
+	int id;
+	int width, height;
+	boolean canPass = true;
+	
+	public Tile(int x, int y, int type) {
+		img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_B.png"); 
+		piece = new GOval(10,10,20,20);
+		if (type == 0) { 
+			piece.setFillColor(Color.WHITE);
+			}
+		if (type == 1) {
+			piece.setFillColor(Color.BLACK);
+
+		}
+		else if (type == 2) piece.setFilled(false);
+		
+		width = x; height = y;
+		img.setSize(width, height);
+	}
+	public void setTile(int type) {
+		if (type == 0) { img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png");  }
+		else if (type == 1) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png"); 
+		else if (type == 2) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_B.png");
+	}
+}

@@ -1,0 +1,5 @@
+import acm.program.GraphicsProgram;
+
+public class MainGame extends GraphicsProgram implements Runnable { {
+
+}

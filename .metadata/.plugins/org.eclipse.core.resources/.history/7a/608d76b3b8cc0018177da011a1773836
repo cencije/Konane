@@ -1,0 +1,33 @@
+import acm.graphics.GImage;
+
+public class Tile {
+
+	GImage img;
+	int id;
+	int width, height;
+	boolean canPass = true;
+	
+	public Tile(int x, int y, int type) {
+		if (type == 0) { img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png");  }
+		if (type == 1) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png"); 
+		else if (type == 2) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_B.png"); 
+
+		width = x; height = y;
+		img.setSize(width, height);
+	}
+	public void setTile(int type) {
+		if (type <= 10) { canPass = false; }
+		if (type == 1) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_T.png"); 
+		else if (type == 2) img = new GImage("../Images/Top_Sprites/Tiles/Wall_H_B.png"); 
+		else if (type == 3) img = new GImage("../Images/Top_Sprites/Tiles/Wall_V_R.png"); 
+		else if (type == 4) img = new GImage("../Images/Top_Sprites/Tiles/Wall_V_L.png");
+		else if (type == 0) img = new GImage("../Images/Top_Sprites/Tiles/Wall_Block.png");
+		else if (type == 21) img = new GImage("../Images/Top_Sprites/Tiles/Grass_1.png");
+		else if (type == 22) img = new GImage("../Images/Top_Sprites/Tiles/Grass_2.png");
+		else if (type == 23) img = new GImage("../Images/Top_Sprites/Tiles/Grass_3.png");
+		else if (type == 24) img = new GImage("../Images/Top_Sprites/Tiles/Grass_4.png");
+		else if (type == 31) img = new GImage("../Images/Top_Sprites/Tiles/Snow_0.png");
+		else if (type == 32) img = new GImage("../Images/Top_Sprites/Tiles/Snow_1.png");
+		else if (type == 100) img = new GImage("../Images/Top_Sprites/Tiles/Wood_2.png");
+	}
+}
